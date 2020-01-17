@@ -17,6 +17,7 @@
 // Math.h - STD math Library
 #include <math.h>
 
+#include <glad/glad.h>
 // Print progress to console while loading (large models)
 #define OBJL_CONSOLE_OUTPUT
 
@@ -210,7 +211,10 @@ namespace objl
 		std::vector<Vertex> Vertices;
 		// Index List
 		std::vector<unsigned int> Indices;
-
+		//VAO, VBO, IBO
+		GLuint VAO, VBO, IBO;
+		//Index Count
+		GLsizei indexCount;
 		// Material
 		Material MeshMaterial;
 	};

@@ -1,14 +1,16 @@
 #pragma once
 #include "OBJ_Loader.h"
 
-class Object
+class gameObject
 {
 public:
 	//Default consructor
-	Object();
+	gameObject();
 	//Destructor
-	~Object();
+	~gameObject();
 
+	objl::Mesh* getMesh() { return objectMesh; }
+	
 private:
 	objl::Mesh* objectMesh;
 	std::string objectName;

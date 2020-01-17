@@ -18,6 +18,7 @@ void SandboxLayer::OnAttach()
 	EnableGLDebugging();
 	//Set clear color
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	
 }
 
 //Runs once when layer is removed from layer stack
