@@ -13,7 +13,7 @@ private:
 	objl::Mesh* objectMesh;
 	std::string objectName;
 	objl::Vector3 position;
-	obj1::Vector3 rotation;
+	objl::Vector3 rotation;
 	
 };
 
