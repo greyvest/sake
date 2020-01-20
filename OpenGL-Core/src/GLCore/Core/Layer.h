@@ -3,7 +3,7 @@
 #include "Core.h"
 #include "Timestep.h"
 #include "../Events/Event.h"
-
+#include "../../OpenGL-Sandbox/gameObject.h"
 namespace GLCore {
 
 	class Layer
@@ -21,6 +21,9 @@ namespace GLCore {
 		inline const std::string& GetName() const { return m_DebugName; }
 	protected:
 		std::string m_DebugName;
+		//Each layer will have its own vector of objects that it will be able to iterate through for rendering
+		std::vector<gameObject *> objectList;
+	  
 	};
 
 }

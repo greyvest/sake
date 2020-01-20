@@ -6,7 +6,7 @@ using namespace GLCore;
 class Sandbox : public Application
 {
 public:
-	Sandbox()
+	Sandbox() : Application("Sandbox Layer Sake")
 	{
 		//Add base layer of functionality to be executed by application
 		PushLayer(new SandboxLayer());

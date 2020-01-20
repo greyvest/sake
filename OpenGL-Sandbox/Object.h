@@ -1,4 +1,6 @@
-#pragma once
+#ifndef OBJECT
+#define OBJECT
+
 #include "OBJ_Loader.h"
 
 class gameObject
@@ -9,7 +11,7 @@ public:
 	//Destructor
 	~gameObject();
 
-	objl::Mesh* getMesh() { return objectMesh; }
+	objl::Mesh* getMesh();
 	
 private:
 	objl::Mesh* objectMesh;
@@ -19,3 +21,5 @@ private:
 	
 };
 
+
+#endif
