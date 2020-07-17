@@ -3,12 +3,14 @@
 
 #include "GLCore/Core/Input.h"
 #include "GLCore/Core/KeyCodes.h"
+#include <GLCore\Events\KeyEvent.h>
 
 namespace GLCore::Utils {
 
 	OrthographicCameraController::OrthographicCameraController(float aspectRatio, bool rotation)
 		: m_AspectRatio(aspectRatio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_Rotation(rotation)
 	{
+
 	}
 
 	void OrthographicCameraController::OnUpdate(Timestep ts)
@@ -64,6 +66,7 @@ namespace GLCore::Utils {
 
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e)
 	{
+		LOG_INFO("ZOOM ZOOM");
 		m_ZoomLevel -= e.GetYOffset() * 0.25f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
 		m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);

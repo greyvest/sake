@@ -22,7 +22,7 @@ namespace GLCore {
 	protected:
 		std::string m_DebugName;
 		//Each layer will have its own vector of objects that it will be able to iterate through for rendering
-		std::vector<gameObject *> objectList;
+		std::vector<baseGameObject *> objectList;
 	  
 	};
 

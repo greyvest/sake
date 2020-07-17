@@ -2,45 +2,54 @@
 #include "OBJ_Loader.h"
 #include <map>
 #include <GLCoreUtils.h>
-#include <filesystem>
+#include <filesystem>w
+#include <GLCore\Core\Layer.h>
+#include <GLCore.h>
+#include "src/SandboxLayer.h"
 
-namespace fileOperations
+static class fileOperations
 {
+private:
+    fileOperations();
+    ~fileOperations();
+
 	static std::map<std::string, objl::Mesh*> meshDict;
 
-    static void setModelDirectory(std::string newDirectory);
+    static void loadModelsIntoGameObjects() {
+        //std::for_each(meshDict.begin(), meshDict.end(), loadModelToGameobject);
+    }
 
-    static objl::Loader modelLoader;
-
-    static std::string modelDirectory = "models/";
-
-	static void loadModelsFromFile()
+    static void loadModelToGameobject(objl::Mesh * mesh, std::string objectName) {
+        gameObject* newGameObject = new gameObject(mesh);
+        newGameObject->setName(objectName);
+        SandboxLayer::addObjectToList(newGameObject);
+    }
+public:
+    ///This function loads models from obj files into game objects
+    static void loadModelsFromFile(std::string inputDirectory)
     {
         using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
-        for (const auto& dirEntry : recursive_directory_iterator(fileOperations::modelDirectory))
+        objl::Loader modelLoader;
+		
+        for (const auto& dirEntry : recursive_directory_iterator(inputDirectory))
         {
-            LOG_INFO("Here's our current file:");
-            LOG_INFO( dirEntry.path().string());
-
-            if (modelLoader.LoadFile(dirEntry.path().string())) {
-                //Hella, it loaded
+			if (modelLoader.LoadFile(dirEntry.path().string())) {
+                //If it loaded with a name "default", change it's name to be not that. TODO: Make this just the file name instead of the path (probably parse it out)
+                if (modelLoader.LoadedMeshes.back().MeshName == "default")
+                    modelLoader.LoadedMeshes.back().MeshName = dirEntry.path().string();
             }
             else {
                 //Uh oh didn't load
             }
-
-
-        }
-
-        //Place references to all the loaded models in the meshDict
+		}
+                
+        //Load all the meshes into a game object and place it in our objectlist
         for each (objl::Mesh currentMesh in modelLoader.LoadedMeshes)
         {
-            meshDict.insert(std::pair(currentMesh.MeshName, &currentMesh));
-            LOG_INFO("Here's a mesh we loaded:");
-            LOG_INFO(currentMesh.MeshName);
+            loadModelToGameobject(&currentMesh, currentMesh.MeshName);
         }
-
+        
     }
 	
 };

@@ -1,13 +1,19 @@
 #include "SandboxLayer.h"
 #include "../../OpenGL-Sandbox/Renderer.h"
 #include "../../OpenGL-Sandbox/fileOperations.h"
+#include <GLCore\Core\KeyCodes.h>
+
 using namespace GLCore;
 using namespace GLCore::Utils;
+
+
 
 //Constructor
 SandboxLayer::SandboxLayer() : m_CameraController(16.0f / 9.0f)
 {
-	fileOperations::loadModelsFromFile();
+	//load all models from file 
+	fileOperations::loadModelsFromFile("models/");
+	//fileOperations::loadModelsIntoGameObjects();
 	
 }
 
@@ -19,6 +25,7 @@ SandboxLayer::~SandboxLayer()
 //Runs once when layer is added to layer stack
 void SandboxLayer::OnAttach()
 {
+	
 	//Enable debugging cause it's good
 	EnableGLDebugging();
 	//Set clear color (probably default to black in future)
@@ -28,46 +35,63 @@ void SandboxLayer::OnAttach()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	//Create our default shader
-	m_Shader = Shader::FromGLSLTextFiles("shaders/test.vert.glsl", "shaders/test.frag.glsl");
 
-	//create vertex array for test square TODO: Remove this once you're importing 3d models
-	glCreateVertexArrays(1, &m_QuadVA);
-	glBindVertexArray(m_QuadVA);
+	createTestShape();
+}
 
-	float vertices[] = {
+
+//This is just to make sure I'm rendering until I can import meshes
+void SandboxLayer::createTestShape()
+{
+	float vertices3[] = {
 		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.5f,  0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f
+		0.5f, -0.5f, 0.0f,
+		0.5f,  0.5f, 0.0f,
+		-0.5f,  0.5f, 0.0f,
+		-0.5f, 0.7f, 0.0f,
+		0.0f, 0.7f, 0.0f,
+		0.0f, 0.5f, 0.0f,
 	};
 
-	glCreateBuffers(1, &m_QuadVB);
-	glBindBuffer(GL_ARRAY_BUFFER, m_QuadVB);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	uint32_t indices3[] = { 0, 1, 2, 2, 3, 0, 3, 4, 5, 3, 5, 6 };
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);
+	uint32_t indices[] = {
+		0, 3, 1,
+		1, 3, 2,
+		2, 3, 0,
+		0, 1, 2
+	};
 
-	uint32_t indices[] = { 0, 1, 2, 2, 3, 0 };
-	glCreateBuffers(1, &m_QuadIB);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_QuadIB);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	float vertices[] = {
+		-1.0f, -1.0f, 0.0f,
+		0.0f, -1.0f, 1.0f,
+		1.0f, -1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f
+	};
 	
+	//Create our default shader
+	Shader* x = Shader::FromGLSLTextFiles("shaders/test.vert.glsl", "shaders/test.frag.glsl");
+	Shader* y = Shader::FromGLSLTextFiles("shaders/test2.vert.glsl", "shaders/test2.frag.glsl");
+	gameObject2D* g3 = new gameObject2D(vertices3, 21, indices3, 12, x);
+
+	gameObject2D* g2 = new gameObject2D(vertices, 12, indices, 12, y);
+
+	//objectList.push_back(g3);
+	objectList.push_back(g2);
 }
 
 //Runs once when layer is removed from layer stack
 void SandboxLayer::OnDetach()
 {
-	// Shutdown here
-	glDeleteVertexArrays(1, &m_QuadVA);
-	glDeleteBuffers(1, &m_QuadVB);
-	glDeleteBuffers(1, &m_QuadIB);
+
 }
 
 //When application recieves events, they're passed into this function as well as every other layer to be processed till the event.handled flag is set to true
 void SandboxLayer::OnEvent(Event& event)
 {
+
+	LOG_INFO(event);
 	// Events here
 	m_CameraController.OnEvent(event);
 
@@ -84,27 +108,47 @@ void SandboxLayer::OnEvent(Event& event)
 			m_SquareColor = m_SquareBaseColor;
 			return false;
 		});
+	dispatcher.Dispatch<KeyPressedEvent>(
+		[&](KeyPressedEvent& e)
+		{
+
+			if (e.GetKeyCode() == HZ_KEY_H)
+			{
+				m_SquareColor = m_SquareAlternateColor;
+			}
+
+			if (e.GetKeyCode() == HZ_KEY_J)
+			{
+				m_SquareColor = m_SquareAlternateColor2;
+			}
+
+			return false;
+		});
+
+	dispatcher.Dispatch<KeyReleasedEvent>(
+		[&](KeyReleasedEvent& e)
+		{
+			m_SquareColor = m_SquareBaseColor;
+			return false;
+		});
+
 }
 //Every render cycle in the application runs this function, with the time from the last render cycle passed in as ts
 void SandboxLayer::OnUpdate(Timestep ts)
 {
+	//Clear screen
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glUseProgram(m_Shader->GetRendererID());
 	
-	int location = glGetUniformLocation(m_Shader->GetRendererID(), "u_ViewProjection");
-	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(m_CameraController.GetCamera().GetViewProjectionMatrix()));
+	m_CameraController.OnUpdate(ts);
 
-	location = glGetUniformLocation(m_Shader->GetRendererID(), "u_Color");
-
-	glUniform4fv(location, 1, glm::value_ptr(m_SquareColor));
-
-	glBindVertexArray(m_QuadVA);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 	// Render all objects in scene here
-	Renderer::RenderObjectList(objectList);
+
+	Renderer::RenderObjectList(objectList, m_CameraController, m_SquareColor);
 	
+	//Reset shader program in use
+	glUseProgram(0);
 }
+
 //IMGUI objects are handled here
 void SandboxLayer::OnImGuiRender()
 {
@@ -113,5 +157,11 @@ void SandboxLayer::OnImGuiRender()
 	if (ImGui::ColorEdit4("Square Base Color", glm::value_ptr(m_SquareBaseColor)))
 		m_SquareColor = m_SquareBaseColor;
 	ImGui::ColorEdit4("Square Alternate Color", glm::value_ptr(m_SquareAlternateColor));
+	ImGui::ColorEdit4("Square Alternate Color 2", glm::value_ptr(m_SquareAlternateColor2));
 	ImGui::End();
+}
+
+void SandboxLayer::addObjectToList(baseGameObject* x)
+{
+	//objectList.push_back(x);
 }

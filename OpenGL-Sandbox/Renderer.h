@@ -5,9 +5,12 @@
 static class Renderer
 {
 public:
-	static void RenderObjectList(std::vector<gameObject*> objectList);
+	
+	static void RenderObjectList(std::vector<baseGameObject*> objectList, GLCore::Utils::OrthographicCameraController inputPM, glm::vec4 inputColor);
 
 	static void RenderObject(gameObject* objectToRender);
+
+	void RenderSprite(gameObject2D* objectToRender);
 
    
 };
