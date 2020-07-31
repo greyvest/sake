@@ -21,7 +21,7 @@ public:
 	//IMGUI renndering loop
 	virtual void OnImGuiRender() override;
 	//Object adding function
-	static void addObjectToList(baseGameObject*);
+	void addObjectToList(baseGameObject*);
 
 
 	//This function will dissapear once I load meshes

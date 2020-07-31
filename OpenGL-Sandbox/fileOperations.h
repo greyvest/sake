@@ -19,14 +19,15 @@ private:
         //std::for_each(meshDict.begin(), meshDict.end(), loadModelToGameobject);
     }
 
-    static void loadModelToGameobject(objl::Mesh * mesh, std::string objectName) {
+    static void loadModelToGameobject(objl::Mesh * mesh, std::string objectName, std::vector<baseGameObject *> * objectList) {
+        LOG_INFO("Loading in " + mesh->MeshName + "to game object" );
         gameObject* newGameObject = new gameObject(mesh);
         newGameObject->setName(objectName);
-        SandboxLayer::addObjectToList(newGameObject);
+        objectList->push_back(newGameObject);
     }
 public:
     ///This function loads models from obj files into game objects
-    static void loadModelsFromFile(std::string inputDirectory)
+    static void loadModelsFromFile(std::string inputDirectory, std::vector<baseGameObject*> *objectList)
     {
         using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
@@ -38,6 +39,8 @@ public:
                 //If it loaded with a name "default", change it's name to be not that. TODO: Make this just the file name instead of the path (probably parse it out)
                 if (modelLoader.LoadedMeshes.back().MeshName == "default")
                     modelLoader.LoadedMeshes.back().MeshName = dirEntry.path().string();
+
+                LOG_INFO(modelLoader.LoadedMeshes.back().MeshName);
             }
             else {
                 //Uh oh didn't load
@@ -47,7 +50,7 @@ public:
         //Load all the meshes into a game object and place it in our objectlist
         for each (objl::Mesh currentMesh in modelLoader.LoadedMeshes)
         {
-            loadModelToGameobject(&currentMesh, currentMesh.MeshName);
+            loadModelToGameobject(&currentMesh, currentMesh.MeshName, objectList);
         }
         
     }

@@ -11,10 +11,11 @@ using namespace GLCore::Utils;
 //Constructor
 SandboxLayer::SandboxLayer() : m_CameraController(16.0f / 9.0f)
 {
+	LOG_INFO(objectList.size());
 	//load all models from file 
-	fileOperations::loadModelsFromFile("models/");
+	//fileOperations::loadModelsFromFile("models/", &objectList);
 	//fileOperations::loadModelsIntoGameObjects();
-	
+	LOG_INFO(objectList.size());
 }
 
 //Destructor
@@ -133,6 +134,8 @@ void SandboxLayer::OnEvent(Event& event)
 		});
 
 }
+
+float scaleFloat;
 //Every render cycle in the application runs this function, with the time from the last render cycle passed in as ts
 void SandboxLayer::OnUpdate(Timestep ts)
 {
@@ -143,7 +146,7 @@ void SandboxLayer::OnUpdate(Timestep ts)
 
 	// Render all objects in scene here
 
-	Renderer::RenderObjectList(objectList, m_CameraController, m_SquareColor);
+	Renderer::RenderObjectList(&objectList, m_CameraController, m_SquareColor);
 	
 	//Reset shader program in use
 	glUseProgram(0);
@@ -158,10 +161,11 @@ void SandboxLayer::OnImGuiRender()
 		m_SquareColor = m_SquareBaseColor;
 	ImGui::ColorEdit4("Square Alternate Color", glm::value_ptr(m_SquareAlternateColor));
 	ImGui::ColorEdit4("Square Alternate Color 2", glm::value_ptr(m_SquareAlternateColor2));
+	ImGui::SliderFloat("Model Scale", &scaleFloat, 0.0f, 1.0f);
 	ImGui::End();
 }
 
 void SandboxLayer::addObjectToList(baseGameObject* x)
 {
-	//objectList.push_back(x);
+	objectList.push_back(x);
 }

@@ -2,9 +2,9 @@
 #include "Renderer.h"
 #include <GLCore\Util\OrthographicCameraController.h>
 
-void Renderer::RenderObjectList(std::vector<baseGameObject*> objectList, GLCore::Utils::OrthographicCameraController inputPM, glm::vec4 inputColor)
+void Renderer::RenderObjectList(std::vector<baseGameObject*> * objectList, GLCore::Utils::OrthographicCameraController inputPM, glm::vec4 inputColor)
 {
-	for each (baseGameObject* obj in objectList)
+	for each (baseGameObject* obj in *objectList)
 	{
 		obj->renderObject(inputPM, inputColor);
 	}
@@ -14,6 +14,7 @@ void Renderer::RenderObject(gameObject* objectToRender)
 {
 	//TODO: Render the object by pulling out the mesh
 	auto objectMesh = objectToRender->getMesh();
+//	LOG_INFO("RENDERING MESH:  " + objectMesh->MeshName);
 	//Bind vertex array to mesh vertexs
 	glBindVertexArray(objectMesh->VAO);
 	//Bind GL_ELEMENT_ARRAY_BUFFER to object mesh 

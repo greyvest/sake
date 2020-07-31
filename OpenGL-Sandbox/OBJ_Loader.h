@@ -211,6 +211,9 @@ namespace objl
 		std::string MeshName;
 		// Vertex List
 		std::vector<Vertex> Vertices;
+		//TODO: If there's some way to pass only the position values from the Vertices vector to glBufferData in rendering, then I could do that ins
+	    //Vertex postion list
+		float *  VertexPositions;
 		// Index List
 		std::vector<unsigned int> Indices;
 		//VAO, VBO, IBO

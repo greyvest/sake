@@ -8,6 +8,7 @@ public:
 	virtual void renderObject(GLCore::Utils::OrthographicCameraController inputPM, glm::vec4 inputColor) = 0;
 	std::string objectName;
 	objl::Vector3 pos;
+	objl::Vector3 rotation;
 public:
 	virtual void setName(std::string);
 };
@@ -27,6 +28,7 @@ public:
 private:
 	//TODO: Do I want to allow multiple meshes per object?
 	objl::Mesh* objectMesh;
+	GLCore::Utils::Shader * shader;
 };
 
 
